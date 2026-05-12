@@ -563,9 +563,18 @@ function pickFolder(){
   if(el)el.textContent+='\nhasFSApi() returned true';
   var localCount=songs.filter(function(s){return s.source==='local'}).length;
   if(localCount>0){
-    if(!confirm('Picking a new folder will clear all '+localCount+' existing local songs from the library.\n\nThe files stay on your device. Continue?')){if(el)el.textContent+='\nUser cancelled confirm dialog';return}
-    if(el)el.textContent+='\nConfirm accepted'
+    if(el)el.textContent+='\nShowing custom confirm modal ('+localCount+' existing local songs)';
+    var h='<h2>Pick New Folder?</h2>'
+      +'<p style="margin-bottom:14px;line-height:1.5">Picking a new folder will clear all '+localCount+' existing local songs from the library.<br><br>The files stay on your device.</p>'
+      +'<div class="ma"><button class="btn bs" onclick="clMod()">Cancel</button><button class="btn bp" onclick="clMod();actuallyPickFolder()">Continue</button></div>';
+    document.getElementById('mbody').innerHTML=h;
+    document.getElementById('modal').classList.add('vis');
+    return
   }
+  actuallyPickFolder()
+}
+function actuallyPickFolder(){
+  var el=document.getElementById('diaglog');
   if(el)el.textContent+='\nCalling showDirectoryPicker()...';
   try{
     window.showDirectoryPicker().then(function(handle){if(el)el.textContent+='\nGot handle: '+handle.name;fsRoot=handle;return saveFolderHandle(handle).then(function(){return fullScanFolder()})}).catch(function(e){if(el)el.textContent+='\nRejected: '+e.name+' - '+e.message;if(e.name!=='AbortError')toast('Error: '+e.message)})
