@@ -122,6 +122,13 @@ html,body{height:100%;overflow:hidden;font-family:'Segoe UI',Roboto,'Noto Sans S
         </div>
         <div id="scanlog" class="sinf" style="margin-top:10px;font-family:monospace;font-size:11px;white-space:pre-wrap;max-height:120px;overflow-y:auto"></div>
       </div>
+      <div class="ss" id="sect-diag"><h3>&#128270; Diagnostic</h3>
+        <div id="diaglog" class="sinf" style="font-family:monospace;font-size:11px;white-space:pre-wrap;line-height:1.5">Loading...</div>
+        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+          <button class="btn bsm bs" onclick="runDiag()">Refresh Diag</button>
+          <button class="btn bsm bs" onclick="testPicker()">Test Picker</button>
+        </div>
+      </div>
       <div class="ss"><h3>&#9729;&#65039; Dropbox</h3><div id="dbxst" class="sinf">Not connected</div>
         <div class="sr"><label>App Key</label><input type="text" id="dbxk" placeholder="Your Dropbox App Key"></div>
         <div class="sr"><label>Folder</label><input type="text" id="dbxf" placeholder="/Gigging/OffSong" value="/Gigging/OffSong"></div>
@@ -235,7 +242,35 @@ var SWATCHES=[
   {name:'Teal',color:'#5cc8c8'}
 ];
 
-function init(){odb().then(function(){return dall('songs')}).then(function(s){songs=s;return dall('setlists')}).then(function(sl){setlists=sl;return loadP()}).then(function(){renderLib();renderSets();updStor();chkDbx();tryRestoreFolder();migrateLocalStorage();attachLibScroll()}).catch(function(e){console.error(e)})}
+function init(){odb().then(function(){return dall('songs')}).then(function(s){songs=s;return dall('setlists')}).then(function(sl){setlists=sl;return loadP()}).then(function(){renderLib();renderSets();updStor();chkDbx();tryRestoreFolder();migrateLocalStorage();attachLibScroll();runDiag()}).catch(function(e){console.error(e)})}
+function runDiag(){
+  var lines=[];
+  lines.push('User agent: '+navigator.userAgent);
+  lines.push('Protocol: '+location.protocol);
+  lines.push('Hostname: '+location.hostname);
+  lines.push('Secure context: '+window.isSecureContext);
+  lines.push('showDirectoryPicker: '+(typeof window.showDirectoryPicker));
+  lines.push('showOpenFilePicker: '+(typeof window.showOpenFilePicker));
+  lines.push('wakeLock: '+('wakeLock' in navigator));
+  lines.push('IndexedDB: '+(typeof indexedDB));
+  lines.push('Storage estimate: '+(navigator.storage&&navigator.storage.estimate?'yes':'no'));
+  document.getElementById('diaglog').textContent=lines.join('\n')
+}
+function testPicker(){
+  var el=document.getElementById('diaglog');
+  el.textContent+='\n\n[Tap detected, attempting picker...]';
+  try{
+    if(typeof window.showDirectoryPicker!=='function'){
+      el.textContent+='\nFAIL: showDirectoryPicker is not a function';
+      return
+    }
+    var p=window.showDirectoryPicker();
+    el.textContent+='\nPicker called, awaiting promise...';
+    p.then(function(h){el.textContent+='\nSUCCESS: got handle for "'+h.name+'"'}).catch(function(e){el.textContent+='\nPicker rejected: '+e.name+' - '+e.message})
+  }catch(e){
+    el.textContent+='\nException: '+e.name+' - '+e.message
+  }
+}
 function attachLibScroll(){
   document.getElementById('main').addEventListener('scroll',function(){
     if(scrollRaf)return;
@@ -522,12 +557,19 @@ function verifyPermission(handle){return handle.queryPermission({mode:'read'}).t
 function makeLocalId(relpath){return 'l_'+btoa(unescape(encodeURIComponent(relpath))).replace(/[+/=]/g,'')}
 
 function pickFolder(){
-  if(!hasFSApi()){toast('Not supported in this browser');return}
+  var el=document.getElementById('diaglog');
+  if(el)el.textContent+='\n\n[pickFolder tapped at '+new Date().toLocaleTimeString()+']';
+  if(!hasFSApi()){if(el)el.textContent+='\nhasFSApi() returned false';toast('Not supported in this browser');return}
+  if(el)el.textContent+='\nhasFSApi() returned true';
   var localCount=songs.filter(function(s){return s.source==='local'}).length;
   if(localCount>0){
-    if(!confirm('Picking a new folder will clear all '+localCount+' existing local songs from the library.\n\nThe files stay on your device. Continue?'))return
+    if(!confirm('Picking a new folder will clear all '+localCount+' existing local songs from the library.\n\nThe files stay on your device. Continue?')){if(el)el.textContent+='\nUser cancelled confirm dialog';return}
+    if(el)el.textContent+='\nConfirm accepted'
   }
-  window.showDirectoryPicker().then(function(handle){fsRoot=handle;return saveFolderHandle(handle).then(function(){return fullScanFolder()})}).catch(function(e){if(e.name!=='AbortError')toast('Error: '+e.message)})
+  if(el)el.textContent+='\nCalling showDirectoryPicker()...';
+  try{
+    window.showDirectoryPicker().then(function(handle){if(el)el.textContent+='\nGot handle: '+handle.name;fsRoot=handle;return saveFolderHandle(handle).then(function(){return fullScanFolder()})}).catch(function(e){if(el)el.textContent+='\nRejected: '+e.name+' - '+e.message;if(e.name!=='AbortError')toast('Error: '+e.message)})
+  }catch(e){if(el)el.textContent+='\nException: '+e.name+' - '+e.message;toast('Error: '+e.message)}
 }
 
 function walkFolder(rootHandle){
