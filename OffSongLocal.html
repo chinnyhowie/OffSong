@@ -123,10 +123,12 @@ html,body{height:100%;overflow:hidden;font-family:'Segoe UI',Roboto,'Noto Sans S
         <div id="scanlog" class="sinf" style="margin-top:10px;font-family:monospace;font-size:11px;white-space:pre-wrap;max-height:120px;overflow-y:auto"></div>
       </div>
       <div class="ss" id="sect-diag"><h3>&#128270; Diagnostic</h3>
+        <div class="sinf" style="margin-bottom:8px;font-weight:600;color:var(--accent)">Build: <span id="appver">?</span></div>
         <div id="diaglog" class="sinf" style="font-family:monospace;font-size:11px;white-space:pre-wrap;line-height:1.5">Loading...</div>
         <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
           <button class="btn bsm bs" onclick="runDiag()">Refresh Diag</button>
-          <button class="btn bsm bs" onclick="testPicker()">Test Picker</button>
+          <button class="btn bsm bs" onclick="testPicker()">Test Dir Picker</button>
+          <button class="btn bsm bs" onclick="testFilePicker()">Test File Picker</button>
         </div>
       </div>
       <div class="ss"><h3>&#9729;&#65039; Dropbox</h3><div id="dbxst" class="sinf">Not connected</div>
@@ -231,6 +233,7 @@ var wakeLockSentinel=null;
 var FONTS={mono:"'Courier New',Courier,'Roboto Mono','Noto Sans Mono','Consolas',monospace,sans-serif",sans:"'Segoe UI',Roboto,'Noto Sans SC','Microsoft YaHei',sans-serif",serif:"Georgia,Times,serif"};
 var KEYSIG={'C':['0',''],'G':['1','\u266F'],'D':['2','\u266F'],'A':['3','\u266F'],'E':['4','\u266F'],'B':['5','\u266F'],'F#':['6','\u266F'],'C#':['7','\u266F'],'F':['1','\u266D'],'Bb':['2','\u266D'],'Eb':['3','\u266D'],'Ab':['4','\u266D'],'Db':['5','\u266D'],'Gb':['6','\u266D'],'Cb':['7','\u266D'],'Am':['0',''],'Em':['1','\u266F'],'Bm':['2','\u266F'],'F#m':['3','\u266F'],'C#m':['4','\u266F'],'G#m':['5','\u266F'],'D#m':['6','\u266F'],'A#m':['7','\u266F'],'Dm':['1','\u266D'],'Gm':['2','\u266D'],'Cm':['3','\u266D'],'Fm':['4','\u266D'],'Bbm':['5','\u266D'],'Ebm':['6','\u266D'],'Abm':['7','\u266D']};
 var FILEEXT=/\.(txt|chopro|chordpro|cho|pdf|jpg|jpeg|png)$/i;
+var APP_VERSION='2026-05-12-B';
 var SWATCHES=[
   {name:'Amber',color:'#e8a44a'},
   {name:'Red',color:'#e85454'},
@@ -244,7 +247,9 @@ var SWATCHES=[
 
 function init(){odb().then(function(){return dall('songs')}).then(function(s){songs=s;return dall('setlists')}).then(function(sl){setlists=sl;return loadP()}).then(function(){renderLib();renderSets();updStor();chkDbx();tryRestoreFolder();migrateLocalStorage();attachLibScroll();runDiag()}).catch(function(e){console.error(e)})}
 function runDiag(){
+  var verEl=document.getElementById('appver');if(verEl)verEl.textContent=APP_VERSION;
   var lines=[];
+  lines.push('Build: '+APP_VERSION);
   lines.push('User agent: '+navigator.userAgent);
   lines.push('Protocol: '+location.protocol);
   lines.push('Hostname: '+location.hostname);
@@ -258,7 +263,7 @@ function runDiag(){
 }
 function testPicker(){
   var el=document.getElementById('diaglog');
-  el.textContent+='\n\n[Tap detected, attempting picker...]';
+  el.textContent+='\n\n[Test Dir Picker tapped at '+new Date().toLocaleTimeString()+']';
   try{
     if(typeof window.showDirectoryPicker!=='function'){
       el.textContent+='\nFAIL: showDirectoryPicker is not a function';
@@ -266,7 +271,24 @@ function testPicker(){
     }
     var p=window.showDirectoryPicker();
     el.textContent+='\nPicker called, awaiting promise...';
-    p.then(function(h){el.textContent+='\nSUCCESS: got handle for "'+h.name+'"'}).catch(function(e){el.textContent+='\nPicker rejected: '+e.name+' - '+e.message})
+    p.then(function(h){el.textContent+='\nSUCCESS: got handle for "'+h.name+'"'}).catch(function(e){el.textContent+='\nDir picker rejected: '+e.name+' - '+e.message})
+  }catch(e){
+    el.textContent+='\nException: '+e.name+' - '+e.message
+  }
+}
+function testFilePicker(){
+  var el=document.getElementById('diaglog');
+  el.textContent+='\n\n[Test File Picker tapped at '+new Date().toLocaleTimeString()+']';
+  try{
+    if(typeof window.showOpenFilePicker!=='function'){
+      el.textContent+='\nFAIL: showOpenFilePicker is not a function';
+      return
+    }
+    window.showOpenFilePicker().then(function(handles){
+      el.textContent+='\nSUCCESS: got '+handles.length+' file(s): '+handles.map(function(h){return h.name}).join(', ')
+    }).catch(function(e){
+      el.textContent+='\nFile picker rejected: '+e.name+' - '+e.message
+    })
   }catch(e){
     el.textContent+='\nException: '+e.name+' - '+e.message
   }
