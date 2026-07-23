@@ -39,7 +39,7 @@ html,body{height:100%;overflow:hidden;font-family:'Segoe UI',Roboto,'Noto Sans S
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 20px;border:none;border-radius:var(--r);font-size:var(--uisz);font-weight:500;cursor:pointer}
 .bp{background:var(--accent);color:#111}.bs{background:var(--bg3);color:var(--text)}.bd{background:var(--red);color:#fff}.bsm{padding:6px 12px;font-size:calc(var(--uisz) - 1px)}
 #song-content{padding:14px 16px 100px;font-family:'Courier New',Courier,'Roboto Mono','Noto Sans Mono','Consolas',monospace,sans-serif;font-size:14px;line-height:1.7;white-space:pre-wrap;word-wrap:break-word}
-.ch{color:var(--chord);font-weight:700}.hdr{color:var(--hc);font-weight:700;font-size:1.05em;margin-top:14px;display:block}
+.ch{color:var(--chord);font-weight:700;letter-spacing:0.08em;margin-right:0.3em}.hdr{color:var(--hc);font-weight:700;font-size:1.05em;margin-top:14px;display:block}
 .cmt{color:var(--cc);font-style:italic;font-size:.9em;display:block}
 .ttl{font-family:inherit;font-size:24px;font-weight:700;display:block;margin-bottom:2px}
 .stl{font-family:inherit;font-size:16px;color:var(--text2);display:block;margin-bottom:10px}
@@ -110,7 +110,7 @@ html,body{height:100%;overflow:hidden;font-family:'Segoe UI',Roboto,'Noto Sans S
       <div class="ss"><h3>&#127924; Master defaults</h3><p class="sinf">Applied to new songs. Per-song changes save automatically.</p>
         <div class="sr"><label>Text size</label><div class="sz-ctl"><button onclick="adjDef('ts',-1)">&minus;</button><span id="def-ts">14</span><button onclick="adjDef('ts',1)">+</button></div></div>
         <div class="sr"><label>Chord size</label><div class="sz-ctl"><button onclick="adjDef('cs',-1)">&minus;</button><span id="def-cs">14</span><button onclick="adjDef('cs',1)">+</button></div></div>
-        <div class="sr"><label>Font</label><select id="def-ff" onchange="saveP()"><option value="mono">Monospace</option><option value="sans">Sans-serif</option><option value="serif">Serif</option></select></div>
+        <div class="sr"><label>Font</label><select id="def-ff" onchange="saveP()"><option value="sans">Sans-serif</option><option value="mono">Monospace</option><option value="serif">Serif</option></select></div>
         <div class="sr"><label>Style</label><select id="def-fs" onchange="saveP()"><option value="normal">Normal</option><option value="bold">Bold</option><option value="italic">Italic</option></select></div>
         <div class="sr"><label>Barline chords</label><select id="def-bar" onchange="saveP()"><option value="inline">Inline</option><option value="above">Above</option></select></div></div>
       <div class="ss" id="sect-local"><h3>&#128193; Local folder</h3><div id="localst" class="sinf">No folder selected</div>
@@ -121,15 +121,6 @@ html,body{height:100%;overflow:hidden;font-family:'Segoe UI',Roboto,'Noto Sans S
           <button class="btn bs" onclick="confirmAction('Disconnect local folder?\nThe files stay on your device but will be removed from the library.',disconnectFolder)">Disconnect</button>
         </div>
         <div id="scanlog" class="sinf" style="margin-top:10px;font-family:monospace;font-size:11px;white-space:pre-wrap;max-height:120px;overflow-y:auto"></div>
-      </div>
-      <div class="ss" id="sect-diag"><h3>&#128270; Diagnostic</h3>
-        <div class="sinf" style="margin-bottom:8px;font-weight:600;color:var(--accent)">Build: <span id="appver">?</span></div>
-        <div id="diaglog" class="sinf" style="font-family:monospace;font-size:11px;white-space:pre-wrap;line-height:1.5">Loading...</div>
-        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
-          <button class="btn bsm bs" onclick="runDiag()">Refresh Diag</button>
-          <button class="btn bsm bs" onclick="testPicker()">Test Dir Picker</button>
-          <button class="btn bsm bs" onclick="testFilePicker()">Test File Picker</button>
-        </div>
       </div>
       <div class="ss"><h3>&#9729;&#65039; Dropbox</h3><div id="dbxst" class="sinf">Not connected</div>
         <div class="sr"><label>App Key</label><input type="text" id="dbxk" placeholder="Your Dropbox App Key"></div>
@@ -146,12 +137,12 @@ html,body{height:100%;overflow:hidden;font-family:'Segoe UI',Roboto,'Noto Sans S
         <div id="progbox" style="display:none"><div class="prog-bar"><div id="progtxt">0 / 0</div><div style="background:var(--bg4);border-radius:2px;height:4px;margin-top:6px"><div id="progfill" class="prog-fill" style="width:0%"></div></div></div></div>
         <div id="slog" class="sinf" style="margin-top:10px;font-family:monospace;font-size:11px;white-space:pre-wrap;max-height:150px;overflow-y:auto"></div></div>
       <div class="ss"><h3>&#127912; Appearance</h3>
-        <div class="sr"><label>Theme</label><select id="opttheme" onchange="applyTheme()"><option value="dark">Dark</option><option value="light">Light</option></select></div>
+        <div class="sr"><label>Theme</label><select id="opttheme" onchange="applyTheme()"><option value="light">Light</option><option value="dark">Dark</option></select></div>
         <div class="sr"><label>Display name</label><select id="optdn" onchange="saveP();renderLib()"><option value="filename">File Name</option><option value="title">Song Title</option></select></div>
         <div class="sr"><label>Chord color</label><div class="swatch-row" id="swatches"></div></div>
         <div class="sr"><label>App font size</label><div class="sz-ctl"><button onclick="adjUI(-1)">&minus;</button><span id="ui-sz">14</span><button onclick="adjUI(1)">+</button></div></div></div>
       <div class="ss"><h3>&#9881; Floating controls</h3>
-        <div class="sr"><label>Size</label><div class="sz-ctl"><button onclick="adjFC('sz',-1)">&minus;</button><span id="fc-sz">12</span><button onclick="adjFC('sz',1)">+</button></div></div>
+        <div class="sr"><label>Size</label><div class="sz-ctl"><button onclick="adjFC('sz',-1)">&minus;</button><span id="fc-sz">20</span><button onclick="adjFC('sz',1)">+</button></div></div>
         <div class="sr"><label>Opacity %</label><div class="sz-ctl"><button onclick="adjFC('op',-10)">&minus;</button><span id="fc-op">92</span><button onclick="adjFC('op',10)">+</button></div></div>
         <div class="sr"><label>Auto-fade</label><select id="fc-fade" onchange="saveP()"><option value="0">Off</option><option value="3">3 sec</option><option value="5" selected>5 sec</option><option value="10">10 sec</option></select></div></div>
       <div class="ss"><h3>&#128190; Data</h3><p class="sinf" id="stinfo" style="white-space:pre-wrap">Loading...</p>
@@ -164,6 +155,15 @@ html,body{height:100%;overflow:hidden;font-family:'Segoe UI',Roboto,'Noto Sans S
           <button class="btn bsm bs" onclick="confirmAction('Remove duplicate files?',dedupSongs)">Remove Duplicates</button>
           <button class="btn bsm bd" onclick="confirmAction('DELETE ALL DATA?\n\nAll songs, setlists, and settings will be permanently removed.\n\nThis cannot be undone!',clearAll)">Clear All</button></div></div>
       <div class="ss"><h3>&#8505;&#65039; Dropbox setup</h3><p class="sinf" style="line-height:1.6">1. Go to <b>dropbox.com/developers</b> &rarr; <b>App Console</b><br>2. Select your app (or create: Scoped access, Full Dropbox)<br>3. <b>Permissions</b> tab: tick files.metadata.read + files.content.read, Submit<br>4. Copy your <b>App Key</b> from Settings tab<br>5. Paste App Key above, set folder path<br>6. Tap <b>Connect Dropbox</b>, authorize, copy code, paste &amp; submit<br>7. Done! Token auto-refreshes. Tap <b>Import All New</b></p></div>
+      <div class="ss" id="sect-diag"><h3>&#128270; Diagnostic</h3>
+        <div class="sinf" style="margin-bottom:8px;font-weight:600;color:var(--accent)">Build: <span id="appver">?</span></div>
+        <div id="diaglog" class="sinf" style="font-family:monospace;font-size:11px;white-space:pre-wrap;line-height:1.5">Loading...</div>
+        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+          <button class="btn bsm bs" onclick="runDiag()">Refresh Diag</button>
+          <button class="btn bsm bs" onclick="testPicker()">Test Dir Picker</button>
+          <button class="btn bsm bs" onclick="testFilePicker()">Test File Picker</button>
+        </div>
+      </div>
     </div>
   </div>
   <div id="float-ctl">
@@ -224,8 +224,8 @@ function dclr(s){return new Promise(function(ok,no){var t=db.transaction(s,'read
 
 var songs=[],setlists=[],cur=null,curSl=null,trV=0,origOffset=0,nash=false,barMode='inline',tempo=100,scrSpd=3,txtSz=14,chdSz=14;
 var songFF='mono',songFS='normal',metIv=null,scrIv=null,metOn=false,scrOn=false;
-var slIdx=0,slMode=false,nstk=[],actx=null,defTs=14,defCs=14,defFF='mono',defFS='normal',defBar='inline';
-var uiSz=14,fcSz=12,fcOp=92,fcFade=5,libScrollY=0,fadeTimer=null,thIv=null,thCount=0,curFilter='all';
+var slIdx=0,slMode=false,nstk=[],actx=null,defTs=14,defCs=14,defFF='sans',defFS='normal',defBar='inline';
+var uiSz=14,fcSz=20,fcOp=92,fcFade=5,libScrollY=0,fadeTimer=null,thIv=null,thCount=0,curFilter='all';
 var pkceVerifier='';
 var dbxToken='',dbxRefresh='',dbxAppKey='';
 var chordColor='#e8a44a';
@@ -233,7 +233,7 @@ var wakeLockSentinel=null;
 var FONTS={mono:"'Courier New',Courier,'Roboto Mono','Noto Sans Mono','Consolas',monospace,sans-serif",sans:"'Segoe UI',Roboto,'Noto Sans SC','Microsoft YaHei',sans-serif",serif:"Georgia,Times,serif"};
 var KEYSIG={'C':['0',''],'G':['1','\u266F'],'D':['2','\u266F'],'A':['3','\u266F'],'E':['4','\u266F'],'B':['5','\u266F'],'F#':['6','\u266F'],'C#':['7','\u266F'],'F':['1','\u266D'],'Bb':['2','\u266D'],'Eb':['3','\u266D'],'Ab':['4','\u266D'],'Db':['5','\u266D'],'Gb':['6','\u266D'],'Cb':['7','\u266D'],'Am':['0',''],'Em':['1','\u266F'],'Bm':['2','\u266F'],'F#m':['3','\u266F'],'C#m':['4','\u266F'],'G#m':['5','\u266F'],'D#m':['6','\u266F'],'A#m':['7','\u266F'],'Dm':['1','\u266D'],'Gm':['2','\u266D'],'Cm':['3','\u266D'],'Fm':['4','\u266D'],'Bbm':['5','\u266D'],'Ebm':['6','\u266D'],'Abm':['7','\u266D']};
 var FILEEXT=/\.(txt|chopro|chordpro|cho|pdf|jpg|jpeg|png)$/i;
-var APP_VERSION='2026-05-12-B';
+var APP_VERSION='2026-07-23-A';
 var SWATCHES=[
   {name:'Amber',color:'#e8a44a'},
   {name:'Red',color:'#e85454'},
@@ -309,7 +309,7 @@ function loadP(){
     if(p.cc){chordColor=p.cc;document.documentElement.style.setProperty('--chord',p.cc)}
     if(p.dn)document.getElementById('optdn').value=p.dn;
     if(p.df)document.getElementById('dbxf').value=p.df;
-    if(p.theme){document.getElementById('opttheme').value=p.theme;applyThemeNow()}
+    var theme=p.theme||'light';document.getElementById('opttheme').value=theme;applyThemeNow();
     if(p.dts)defTs=p.dts;if(p.dcs)defCs=p.dcs;
     if(p.dff){defFF=p.dff;document.getElementById('def-ff').value=p.dff}
     if(p.dfs){defFS=p.dfs;document.getElementById('def-fs').value=p.dfs}
@@ -362,7 +362,7 @@ function applyThemeNow(){document.documentElement.setAttribute('data-theme',docu
 function adjDef(w,n){if(w==='ts'){defTs=Math.max(8,Math.min(32,defTs+n));document.getElementById('def-ts').textContent=defTs}else{defCs=Math.max(8,Math.min(32,defCs+n));document.getElementById('def-cs').textContent=defCs}saveP()}
 function adjUI(n){uiSz=Math.max(10,Math.min(22,uiSz+n));document.getElementById('ui-sz').textContent=uiSz;applyUI();saveP()}
 function applyUI(){document.documentElement.style.setProperty('--uisz',uiSz+'px')}
-function adjFC(w,n){if(w==='sz'){fcSz=Math.max(8,Math.min(30,fcSz+n));document.getElementById('fc-sz').textContent=fcSz}else{fcOp=Math.max(20,Math.min(100,fcOp+n));document.getElementById('fc-op').textContent=fcOp}applyFC();saveP()}
+function adjFC(w,n){if(w==='sz'){fcSz=Math.max(8,Math.min(50,fcSz+n));document.getElementById('fc-sz').textContent=fcSz}else{fcOp=Math.max(20,Math.min(100,fcOp+n));document.getElementById('fc-op').textContent=fcOp}applyFC();saveP()}
 function applyFC(){document.documentElement.style.setProperty('--fcsz',fcSz+'px');document.documentElement.style.setProperty('--fcop',(fcOp/100).toFixed(2))}
 function touchFC(){document.getElementById('float-ctl').classList.remove('faded');document.getElementById('float-scr').classList.remove('faded');resetFade()}
 function resetFade(){if(fadeTimer)clearTimeout(fadeTimer);var secs=parseInt(document.getElementById('fc-fade').value);if(!secs)return;fadeTimer=setTimeout(function(){var el=document.getElementById('float-ctl');if(el.classList.contains('vis'))el.classList.add('faded');var el2=document.getElementById('float-scr');if(el2.classList.contains('vis'))el2.classList.add('faded')},secs*1000)}
@@ -509,16 +509,60 @@ var NS=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'],NF=['C','Db','D','
 var NM={'C':'1','C#':'#1','Db':'b2','D':'2','D#':'#2','Eb':'b3','E':'3','F':'4','F#':'#4','Gb':'b5','G':'5','G#':'#5','Ab':'b6','A':'6','A#':'#6','Bb':'b7','B':'7'};
 function noteIdx(n,a){var i=NS.indexOf(n+a);if(i>=0)return i;i=NF.indexOf(n+a);return i}
 function keyNoteIdx(k){if(!k)return-1;var base=k.replace(/m$/,'');return noteIdx(base.charAt(0),base.length>1?base.charAt(1):'')}
-function nashvilleToLetter(ch,key){if(!key)return ch;var keyBase=key.replace(/m$/,'');var ki=noteIdx(keyBase.charAt(0),keyBase.length>1?keyBase.charAt(1):'');if(ki<0)return ch;var useFlat=FLAT_IDX[ki];var INTERVALS={'1':0,'2':2,'3':4,'4':5,'5':7,'6':9,'7':11};return ch.replace(/(^|\/)([#b]?)([1-7])([#b]?)/g,function(match,sep,pre,digit,post){var iv=INTERVALS[digit];if(pre==='b'||post==='b')iv-=1;if(pre==='#'||post==='#')iv+=1;var ni=(ki+iv+120)%12;return sep+(useFlat?NF[ni]:NS[ni])})}
-function trC(ch,s){if(/^N\.?C\.?($|[^A-Za-z])/i.test(ch))return ch;ch=nashvilleToLetter(ch,cur?cur.key||'C':'C');if(!s)return ch;var k=getKey();var kBase=k.replace(/m$/,'');var ki=noteIdx(kBase.charAt(0),kBase.length>1?kBase.charAt(1):'');var useFlat=FLAT_IDX[ki];return ch.replace(/([A-G])([#b]?)/g,function(_,n,a){var i=noteIdx(n,a);if(i<0)return _;var ni=(i+s+120)%12;return useFlat?NF[ni]:NS[ni]})}
+function nashvilleToLetter(ch,key){if(!key)return ch;var isMin=key.endsWith('m');var keyBase=key.replace(/m$/,'');var ki=noteIdx(keyBase.charAt(0),keyBase.length>1?keyBase.charAt(1):'');if(ki<0)return ch;var useFlat=keyUsesFlat(ki,isMin);var INTERVALS={'1':0,'2':2,'3':4,'4':5,'5':7,'6':9,'7':11};return ch.replace(/(^|\/)([#b]?)([1-7])([#b]?)/g,function(match,sep,pre,digit,post){var iv=INTERVALS[digit];if(pre==='b'||post==='b')iv-=1;if(pre==='#'||post==='#')iv+=1;var ni=(ki+iv+120)%12;return sep+applyEnharm(useFlat?NF[ni]:NS[ni])})}
+function trC(ch,s){if(/^N\.?C\.?($|[^A-Za-z])/i.test(ch))return ch;ch=nashvilleToLetter(ch,cur?cur.key||'C':'C');if(!s)return ch;var origKey=cur?cur.key||'C':'C';var isMin=origKey.endsWith('m');var origBase=origKey.replace(/m$/,'');var oi=noteIdx(origBase.charAt(0),origBase.length>1?origBase.charAt(1):'');if(oi<0)oi=0;var useFlat=keyUsesFlat(oi,isMin);return ch.replace(/([A-G])([#b]?)/g,function(_,n,a){var i=noteIdx(n,a);if(i<0)return _;var ni=(i+s+120)%12;return applyEnharm(useFlat?NF[ni]:NS[ni])})}
 function nashC(ch,key){var ki=NS.indexOf(key);if(ki<0)return ch;return ch.replace(/([A-G])([#b]?)(m(?:aj|in)?|dim|aug|sus|add|[0-9]*)?/g,function(_,n,a,sf){var i=NS.indexOf(n+a);if(i<0)i=NF.indexOf(n+a);if(i<0)return _;return(NM[NS[(i-ki+12)%12]]||'?')+(sf||'')})}
-var FLAT_IDX={1:1,3:1,5:1,8:1,10:1};
-function getKey(){var k=cur?cur.key||'C':'C';var isMinor=k.endsWith('m');var base=isMinor?k.slice(0,-1):k;var i=noteIdx(base.charAt(0),base.length>1?base.charAt(1):'');if(i<0)i=0;var ni=(i+trV+120)%12;var useFlat=FLAT_IDX[ni];var tr=useFlat?NF[ni]:NS[ni];return isMinor?tr+'m':tr}
+/* Enharmonic spelling: for each chromatic index (0-11), map to preferred note name per key context.
+   KEY_SPELL maps root note index -> preferred accidental for that key (true=flat, false=sharp).
+   Built from the 24 practical keys. Cb->B substitution applied. */
+var KEY_SPELL={
+  0:false,  // C  -> sharps (C major / A minor)
+  2:false,  // D  -> sharps
+  4:false,  // E  -> sharps
+  5:true,   // F  -> flats
+  7:false,  // G  -> sharps
+  9:false,  // A  -> sharps (but Am uses naturals)
+  11:false, // B  -> sharps
+  1:true,   // Db -> flats
+  3:false,  // Eb -> treat as flat key but Eb itself uses flats
+  6:true,   // Gb -> flats
+  8:true,   // Ab -> flats
+  10:true   // Bb -> flats
+};
+// For each chromatic root index, use flat spelling?
+/* Map each key root (as string) to whether it uses flats.
+   Minor keys use their relative major's preference (relative major = root + 3 semitones). */
+var KEY_USE_FLAT={
+  'C':false,'G':false,'D':false,'A':false,'E':false,'B':false,
+  'Gb':true,'Db':true,'Ab':true,'Eb':true,'Bb':true,'F':true,
+  // Minor keys — same preference as relative major
+  'A':false,'E':false,'B':false,'F#':false,'C#':false,'G#':false,
+  'Eb':true,'Bb':true,'F':true,'C':false,'G':false,'D':false
+};
+/* Simpler lookup by chromatic index + minor flag */
+/* Sharp minor keys: Am Em Bm F#m C#m G#m -> roots A E B F# C# G# -> indices 9 4 11 6 1 8 */
+/* Flat minor keys: Ebm Bbm Fm Cm Gm Dm -> roots Eb Bb F C G D -> indices 3 10 5 0 7 2 */
+var MINOR_USE_FLAT={9:false,4:false,11:false,6:false,1:false,8:false,3:true,10:true,5:true,0:true,7:true,2:true};
+var MAJOR_USE_FLAT={0:false,2:false,4:false,5:true,7:false,9:false,11:false,1:true,3:true,6:true,8:true,10:true};
+var ENHARM_SUB={'E#':'F','B#':'C','Fb':'E','Cb':'B'};
+function applyEnharm(n){return ENHARM_SUB[n]||n}
+function keyUsesFlat(rootIdx,isMinor){return isMinor?MINOR_USE_FLAT[rootIdx]:MAJOR_USE_FLAT[rootIdx]}
+function getKey(){
+  var k=cur?cur.key||'C':'C';
+  var isMinor=k.endsWith('m');
+  var base=isMinor?k.slice(0,-1):k;
+  var i=noteIdx(base.charAt(0),base.length>1?base.charAt(1):'');
+  if(i<0)i=0;
+  var ni=(i+trV+120)%12;
+  var origUseFlat=keyUsesFlat(i,isMinor);
+  var tr=applyEnharm(origUseFlat?NF[ni]:NS[ni]);
+  return isMinor?tr+'m':tr
+}
 function getKeySig(k){var ks=KEYSIG[k];if(ks)return ks[0]==='0'?'':(ks[0]+ks[1]);return''}
 function updTransLbl(){var k=getKey();var sig=getKeySig(k);document.getElementById('trlbl1').textContent=k+(sig?' ('+sig+')':'');var rel=trV-origOffset;document.getElementById('trlbl2').textContent=(rel>0?'+':'')+rel}
 function rcInline(line,sKey){var out='',ci=0;while(ci<line.length){if(line[ci]==='['){var ce=line.indexOf(']',ci);if(ce>=0){var ch=trC(line.substring(ci+1,ce),trV);if(nash)ch=nashC(ch,trC(sKey,trV));out+='<span class="ch">'+esc(ch)+'</span>';ci=ce+1}else{out+=esc(line[ci]);ci++}}else{out+=esc(line[ci]);ci++}}return out}
 function rcAbove(line,sKey){var cl='',ll='',p=0,ci=0;while(ci<line.length){if(line[ci]==='['){var ce=line.indexOf(']',ci);if(ce>=0){var ch=trC(line.substring(ci+1,ce),trV);if(nash)ch=nashC(ch,trC(sKey,trV));while(cl.length<p)cl+=' ';cl+=ch;ci=ce+1}else{ci++;p++}}else{ll+=line[ci];p++;ci++}}var h='';if(cl.trim())h+='<span class="ch">'+esc(cl)+'</span>\n';h+=esc(ll)+'\n';return h}
-function renderSong(){if(!cur||cur.type!=='chopro')return;var lines=cur.content.split('\n'),html='',inTab=false,tbuf='',sKey=cur.key||'C';for(var li=0;li<lines.length;li++){var line=lines[li];if(line.trim().match(/^\{so[tc]?\}$/i)){inTab=true;tbuf='';continue}if(line.trim().match(/^\{eo[tc]?\}$/i)){html+='<span class="tab">'+esc(tbuf)+'</span>';inTab=false;continue}if(inTab){tbuf+=(tbuf?'\n':'')+line;continue}var dir=line.match(/^\{(\w+)\s*:\s*(.+?)\}$/);if(dir){var c=dir[1].toLowerCase(),v=dir[2];if(c==='t'||c==='title'){html+='<span class="ttl">'+esc(v)+'</span>';continue}if(c==='st'||c==='subtitle'||c==='su'||c==='artist'){html+='<span class="stl">'+esc(v)+'</span>';continue}if(c==='c'||c==='comment'){html+='<span class="cmt">'+esc(v)+'</span>';continue}if(c==='key'||c==='duration'||c==='tempo'){html+='<span class="met">'+c.charAt(0).toUpperCase()+c.slice(1)+': '+esc(v)+'</span>';continue}continue}if(line.trim().match(/^\{.*\}$/))continue;if(line.trim().match(/^(Verse|Chorus|Bridge|Intro|Outro|Pre-Chorus|Interlude|Solo|Instrumental|Coda|Tag|Ending)\s*\d*\s*:?\s*$/i)){html+='<span class="hdr">'+esc(line)+'</span>';continue}if(line.indexOf('[')>=0){if(line.trim().match(/^(Key|Duration|Tempo|Time|Capo)\s*:/i)){html+='<span class="met">'+rcInline(line,sKey)+'</span>';continue}if(line.indexOf('|')>=0){if(barMode==='above'){html+=rcAbove(line,sKey);continue}html+=rcInline(line,sKey)+'\n';continue}html+=rcAbove(line,sKey);continue}if(line.trim().match(/^(Key|Duration|Tempo|Time|Capo)\s*:/i)){html+='<span class="met">'+esc(line)+'</span>';continue}html+=esc(line)+'\n'}document.getElementById('song-content').innerHTML=html;applySz();applySongFont()}
+function renderSong(){if(!cur||cur.type!=='chopro')return;var lines=cur.content.split('\n'),html='',inTab=false,tbuf='',sKey=cur.key||'C';for(var li=0;li<lines.length;li++){var line=lines[li];var tline=line.trim();if(tline.match(/^\{so[tc]?\}$/i)){inTab=true;tbuf='';continue}if(tline.match(/^\{eo[tc]?\}$/i)){html+='<span class="tab">'+esc(tbuf)+'</span>';inTab=false;continue}if(inTab){tbuf+=(tbuf?'\n':'')+line;continue}var dir=tline.match(/^\{(\w+)\s*:\s*(.+?)\}$/);if(dir){var c=dir[1].toLowerCase(),v=dir[2];if(c==='t'||c==='title'){html+='<span class="ttl">'+esc(v)+'</span>';continue}if(c==='st'||c==='subtitle'||c==='su'||c==='artist'){html+='<span class="stl">'+esc(v)+'</span>';continue}if(c==='c'||c==='comment'){html+='<span class="cmt">'+esc(v)+'</span>';continue}if(c==='key'||c==='duration'||c==='tempo'){html+='<span class="met">'+c.charAt(0).toUpperCase()+c.slice(1)+': '+esc(v)+'</span>';continue}continue}if(tline.match(/^\{.*\}$/))continue;if(tline.match(/^(Verse|Chorus|Bridge|Intro|Outro|Pre-Chorus|Interlude|Solo|Instrumental|Coda|Tag|Ending)\s*\d*\s*:?\s*$/i)){html+='<span class="hdr">'+esc(tline)+'</span>';continue}if(line.indexOf('[')>=0){if(tline.match(/^(Key|Duration|Tempo|Time|Capo)\s*:/i)){html+='<span class="met">'+rcInline(line,sKey)+'</span>';continue}if(line.indexOf('|')>=0){if(barMode==='above'){html+=rcAbove(line,sKey);continue}html+=rcInline(line,sKey)+'\n';continue}html+=rcAbove(line,sKey);continue}if(tline.match(/^(Key|Duration|Tempo|Time|Capo)\s*:/i)){html+='<span class="met">'+esc(line)+'</span>';continue}html+=esc(line)+'\n'}document.getElementById('song-content').innerHTML=html;applySz();applySongFont()}
 
 function doTrans(n){trV+=n;updTransLbl();renderSong();saveSongPrefs();touchFC()}
 function togNash(){nash=!nash;document.getElementById('sp-nash').textContent=nash?'On':'Off';document.getElementById('sp-nash').classList.toggle('on',nash);renderSong()}
