@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>OffSong v5</title>
+<title>OffSong</title>
 <style>
 :root{--bg:#0f1117;--bg2:#181a24;--bg3:#21242f;--bg4:#2a2e3b;--text:#e8e6e3;--text2:#9b99a1;--accent:#e8a44a;--accent2:#d4893a;--adim:rgba(232,164,74,.15);--chord:#e8a44a;--hc:#7eb8da;--cc:#a3d977;--red:#e85454;--green:#5ce89e;--r:10px;--uisz:14px;--fcsz:12px;--fcop:0.92}
 [data-theme="light"]{--bg:#f5f5f0;--bg2:#ffffff;--bg3:#e8e8e2;--bg4:#d8d8d2;--text:#1a1a1a;--text2:#666660;--accent:#c07820;--accent2:#a06010;--adim:rgba(192,120,32,.12);--chord:#c07820;--hc:#2070a0;--cc:#408020;--red:#d03030;--green:#20a050}
@@ -45,9 +45,9 @@ html,body{height:100%;overflow:hidden;font-family:'Segoe UI',Roboto,'Noto Sans S
 .stl{font-family:inherit;font-size:16px;color:var(--text2);display:block;margin-bottom:10px}
 .met{font-size:.85em;color:var(--text2);display:block;margin-bottom:2px}
 .tab{font-family:'Courier New',monospace;font-size:.9em;color:var(--text2);background:var(--bg3);padding:10px;border-radius:6px;margin:8px 0;overflow-x:auto;white-space:pre;display:block}
-#float-ctl{position:fixed;top:56px;right:10px;z-index:50;display:none;flex-direction:column;gap:3px;align-items:stretch;width:130px;transition:opacity .5s;opacity:var(--fcop)}
+#float-ctl{position:fixed;top:56px;right:10px;z-index:50;display:none;flex-direction:column;gap:3px;align-items:stretch;min-width:130px;width:max-content;transition:opacity .5s;opacity:var(--fcop)}
 #float-ctl.vis{display:flex}#float-ctl.faded{opacity:0.25}
-#float-scr{position:fixed;bottom:20px;right:10px;z-index:50;display:none;width:130px;transition:opacity .5s;opacity:var(--fcop)}
+#float-scr{position:fixed;bottom:20px;right:10px;z-index:50;display:none;min-width:130px;width:max-content;transition:opacity .5s;opacity:var(--fcop)}
 #float-scr.vis{display:block}#float-scr.faded{opacity:0.25}
 .fc{display:flex;align-items:center;justify-content:space-between;background:var(--bg2);border:1px solid var(--bg3);border-radius:8px;padding:2px}
 .fc .fb{background:none;border:none;color:var(--text);font-size:var(--fcsz);padding:4px 7px;cursor:pointer;border-radius:5px}.fc .fb:hover{background:var(--bg4)}
@@ -233,7 +233,7 @@ var wakeLockSentinel=null;
 var FONTS={mono:"'Courier New',Courier,'Roboto Mono','Noto Sans Mono','Consolas',monospace,sans-serif",sans:"'Segoe UI',Roboto,'Noto Sans SC','Microsoft YaHei',sans-serif",serif:"Georgia,Times,serif"};
 var KEYSIG={'C':['0',''],'G':['1','\u266F'],'D':['2','\u266F'],'A':['3','\u266F'],'E':['4','\u266F'],'B':['5','\u266F'],'F#':['6','\u266F'],'C#':['7','\u266F'],'F':['1','\u266D'],'Bb':['2','\u266D'],'Eb':['3','\u266D'],'Ab':['4','\u266D'],'Db':['5','\u266D'],'Gb':['6','\u266D'],'Cb':['7','\u266D'],'Am':['0',''],'Em':['1','\u266F'],'Bm':['2','\u266F'],'F#m':['3','\u266F'],'C#m':['4','\u266F'],'G#m':['5','\u266F'],'D#m':['6','\u266F'],'A#m':['7','\u266F'],'Dm':['1','\u266D'],'Gm':['2','\u266D'],'Cm':['3','\u266D'],'Fm':['4','\u266D'],'Bbm':['5','\u266D'],'Ebm':['6','\u266D'],'Abm':['7','\u266D']};
 var FILEEXT=/\.(txt|chopro|chordpro|cho|pdf|jpg|jpeg|png)$/i;
-var APP_VERSION='2026-07-23-A';
+var APP_VERSION='2026-07-23-B';
 var SWATCHES=[
   {name:'Amber',color:'#e8a44a'},
   {name:'Red',color:'#e85454'},
@@ -362,7 +362,7 @@ function applyThemeNow(){document.documentElement.setAttribute('data-theme',docu
 function adjDef(w,n){if(w==='ts'){defTs=Math.max(8,Math.min(32,defTs+n));document.getElementById('def-ts').textContent=defTs}else{defCs=Math.max(8,Math.min(32,defCs+n));document.getElementById('def-cs').textContent=defCs}saveP()}
 function adjUI(n){uiSz=Math.max(10,Math.min(22,uiSz+n));document.getElementById('ui-sz').textContent=uiSz;applyUI();saveP()}
 function applyUI(){document.documentElement.style.setProperty('--uisz',uiSz+'px')}
-function adjFC(w,n){if(w==='sz'){fcSz=Math.max(8,Math.min(50,fcSz+n));document.getElementById('fc-sz').textContent=fcSz}else{fcOp=Math.max(20,Math.min(100,fcOp+n));document.getElementById('fc-op').textContent=fcOp}applyFC();saveP()}
+function adjFC(w,n){if(w==='sz'){fcSz=Math.max(8,fcSz+n);document.getElementById('fc-sz').textContent=fcSz}else{fcOp=Math.max(20,Math.min(100,fcOp+n));document.getElementById('fc-op').textContent=fcOp}applyFC();saveP()}
 function applyFC(){document.documentElement.style.setProperty('--fcsz',fcSz+'px');document.documentElement.style.setProperty('--fcop',(fcOp/100).toFixed(2))}
 function touchFC(){document.getElementById('float-ctl').classList.remove('faded');document.getElementById('float-scr').classList.remove('faded');resetFade()}
 function resetFade(){if(fadeTimer)clearTimeout(fadeTimer);var secs=parseInt(document.getElementById('fc-fade').value);if(!secs)return;fadeTimer=setTimeout(function(){var el=document.getElementById('float-ctl');if(el.classList.contains('vis'))el.classList.add('faded');var el2=document.getElementById('float-scr');if(el2.classList.contains('vis'))el2.classList.add('faded')},secs*1000)}
