@@ -99,9 +99,9 @@ html,body{height:100%;overflow:hidden;font-family:'Segoe UI',Roboto,'Noto Sans S
 </head>
 <body>
 <div id="app">
-  <div id="topbar"><button class="tb" id="backb" style="display:none" onclick="goBack()">&#8592;</button><div id="tb-brand" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.2"><div style="display:flex;align-items:baseline;gap:5px"><span id="tbtitle" style="font-size:16px;font-weight:600">OffSong</span><span id="tbver" style="font-size:11px;color:var(--text2)">v2.1</span></div><div id="tbcopy" style="font-size:11px;color:var(--text2)">&#169; 2026 Howie Yeo</div></div><div id="tbact"></div><button class="tb" id="sp-gear" style="display:none" onclick="togSidePanel()">&#9881;</button></div>
+  <div id="topbar"><button class="tb" id="backb" style="display:none" onclick="goBack()">&#8592;</button><div id="tb-brand" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.2"><div style="display:flex;align-items:baseline;gap:5px"><span id="tbtitle" style="font-size:16px;font-weight:600">OffSong</span><span id="tbver" style="font-size:11px;color:var(--text2)">v5.2</span></div><div id="tbcopy" style="font-size:11px;color:var(--text2)">&#169; 2026 Howie Yeo</div></div><div id="tbact"></div><button class="tb" id="sp-gear" style="display:none" onclick="togSidePanel()">&#9881;</button></div>
   <div id="main">
-    <div class="page vis" id="pg-lib"><div id="lib-top"><div class="sbar"><span>&#128269;</span><input type="text" id="sinp" placeholder="Search songs..." oninput="renderLib()"></div><div class="filters" id="filters"></div></div><div id="liblist"></div></div>
+    <div class="page vis" id="pg-lib"><div id="lib-top"><div class="sbar"><span>&#128269;</span><input type="text" id="sinp" placeholder="Search songs..." oninput="renderLib()"></div><div class="filters" id="filters"></div><div class="filters" id="tag-filters" style="display:none"></div></div><div id="liblist"></div></div>
     <div class="page" id="pg-song"><div id="song-content"></div></div>
     <div class="page" id="pg-pdf" style="padding:8px 0 90px"><div id="pdff"></div></div>
     <div class="page" id="pg-img" style="padding:8px 16px 90px"><img id="imgv" style="max-width:100%;border-radius:8px"></div>
@@ -229,7 +229,7 @@ function dclr(s){return new Promise(function(ok,no){var t=db.transaction(s,'read
 var songs=[],setlists=[],cur=null,curSl=null,trV=0,origOffset=0,nash=false,barMode='inline',tempo=100,scrSpd=5,txtSz=14,chdSz=14;
 var songFF='mono',songFS='normal',metIv=null,scrIv=null,metOn=false,scrOn=false;
 var slIdx=0,slMode=false,nstk=[],actx=null,defTs=14,defCs=14,defFF='sans',defFS='normal',defBar='inline';
-var uiSz=14,fcSz=20,fcOp=92,fcFade=5,libScrollY=0,fadeTimer=null,thIv=null,thCount=0,curFilter='all';
+var uiSz=14,fcSz=20,fcOp=92,fcFade=5,libScrollY=0,fadeTimer=null,thIv=null,thCount=0,curFilter='all',curTag='';
 var pkceVerifier='';
 var dbxToken='',dbxRefresh='',dbxAppKey='';
 var chordColor='#e8a44a';
@@ -237,7 +237,7 @@ var wakeLockSentinel=null;
 var FONTS={mono:"'Courier New',Courier,'Roboto Mono','Noto Sans Mono','Consolas',monospace,sans-serif",sans:"'Segoe UI',Roboto,'Noto Sans SC','Microsoft YaHei',sans-serif",serif:"Georgia,Times,serif"};
 var KEYSIG={'C':['0',''],'G':['1','\u266F'],'D':['2','\u266F'],'A':['3','\u266F'],'E':['4','\u266F'],'B':['5','\u266F'],'F#':['6','\u266F'],'C#':['7','\u266F'],'F':['1','\u266D'],'Bb':['2','\u266D'],'Eb':['3','\u266D'],'Ab':['4','\u266D'],'Db':['5','\u266D'],'Gb':['6','\u266D'],'Cb':['7','\u266D'],'Am':['0',''],'Em':['1','\u266F'],'Bm':['2','\u266F'],'F#m':['3','\u266F'],'C#m':['4','\u266F'],'G#m':['5','\u266F'],'D#m':['6','\u266F'],'A#m':['7','\u266F'],'Dm':['1','\u266D'],'Gm':['2','\u266D'],'Cm':['3','\u266D'],'Fm':['4','\u266D'],'Bbm':['5','\u266D'],'Ebm':['6','\u266D'],'Abm':['7','\u266D']};
 var FILEEXT=/\.(txt|chopro|chordpro|cho|pdf|jpg|jpeg|png)$/i;
-var APP_VERSION='v2.1';
+var APP_VERSION='v5.2';
 var SWATCHES=[
   {name:'Amber',color:'#e8a44a'},
   {name:'Red',color:'#e85454'},
@@ -398,7 +398,31 @@ function closeSidePanel(){document.getElementById('sidepanel').classList.remove(
 
 function getTypeIcon(t){if(t==='pdf')return['pd','&#128196;'];if(t==='image')return['im','&#128247;'];return['cp','&#127925;']}
 function getCounts(){var c={all:0,chopro:0,pdf:0,image:0};for(var i=0;i<songs.length;i++){c.all++;c[songs[i].type]++}return c}
-function renderFilters(){var c=getCounts();var types=[['all','All '+c.all],['chopro','&#127925; TXT '+c.chopro],['pdf','&#128196; PDF '+c.pdf],['image','&#128247; IMG '+c.image]];var h='';for(var i=0;i<types.length;i++)h+='<button class="fpill'+(curFilter===types[i][0]?' on':'')+'" onclick="setFilter(\''+types[i][0]+'\')">'+types[i][1]+'</button>';document.getElementById('filters').innerHTML=h}
+function getFileTags(allSongs){
+  var seen={},tags=[];
+  var re=/^\(([A-Z0-9][A-Z0-9\-]*)\)/;
+  for(var i=0;i<allSongs.length;i++){
+    var fn=allSongs[i].filename||allSongs[i].title||'';
+    var m=fn.match(re);
+    if(m&&!seen[m[1]]){seen[m[1]]=true;tags.push(m[1])}
+  }
+  return tags.sort()
+}
+function renderFilters(){
+  var c=getCounts();
+  var types=[['all','All '+c.all],['chopro','&#127925; TXT '+c.chopro],['pdf','&#128196; PDF '+c.pdf],['image','&#128247; IMG '+c.image]];
+  var h='';for(var i=0;i<types.length;i++)h+='<button class="fpill'+(curFilter===types[i][0]?' on':'')+'" onclick="setFilter(\''+types[i][0]+'\')">'+types[i][1]+'</button>';
+  document.getElementById('filters').innerHTML=h;
+  var tags=getFileTags(songs);
+  var tf=document.getElementById('tag-filters');
+  if(!tags.length){tf.style.display='none';return}
+  tf.style.display='flex';
+  var th='<button class="fpill'+(curTag===''?' on':'')+'" onclick="setTag(\'\')">All</button>';
+  for(var j=0;j<tags.length;j++)th+='<button class="fpill'+(curTag===tags[j]?' on':'')+'" onclick="setTag(\''+tags[j]+'\')">'+tags[j]+'</button>';
+  tf.innerHTML=th
+}
+function setFilter(f){curFilter=f;renderLib()}
+function setTag(t){curTag=t;renderLib()}
 function getInitials(str){
   if(!str)return'';
   var words=str.replace(/\.[^.]+$/,'').split(/[\s\-_]+/);
@@ -414,7 +438,6 @@ function matchInitials(query,initials){
   if(!query||!initials)return false;
   return initials.indexOf(query)>=0
 }
-function setFilter(f){curFilter=f;renderLib()}
 var libFiltered=[],libRendered={start:-1,end:-1},ROW_H=66,scrollRaf=null;
 function renderLib(){
   renderFilters();
@@ -422,6 +445,11 @@ function renderLib(){
   var uf=document.getElementById('optdn').value==='filename';
   libFiltered=songs.filter(function(s){
     if(curFilter!=='all'&&s.type!==curFilter)return false;
+    if(curTag){
+      var fn=s.filename||s.title||'';
+      var m=fn.match(/^\(([A-Z0-9][A-Z0-9\-]*)\)/);
+      if(!m||m[1]!==curTag)return false
+    }
     if(!q)return true;
     var haystack=((s.filename||'')+' '+s.title+' '+(s.artist||'')).toLowerCase();
     if(haystack.indexOf(q)>=0)return true;
