@@ -99,9 +99,9 @@ html,body{height:100%;overflow:hidden;font-family:'Segoe UI',Roboto,'Noto Sans S
 </head>
 <body>
 <div id="app">
-  <div id="topbar"><button class="tb" id="backb" style="display:none;position:absolute;left:12px" onclick="goBack()">&#8592;</button><div id="tb-brand" style="display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.2;text-align:center"><div style="display:flex;align-items:baseline;gap:5px"><span id="tbtitle" style="font-size:16px;font-weight:600">OffSong</span><span id="tbver" style="font-size:11px;color:var(--text2)">v5.5</span></div><div id="tbcopy" style="font-size:11px;color:var(--text2)">&#169; 2026 Howie Yeo</div></div><div id="tbact"></div><button class="tb" id="sp-gear" style="display:none;position:absolute;right:12px" onclick="togSidePanel()">&#9881;</button></div>
+  <div id="topbar"><button class="tb" id="backb" style="display:none;position:absolute;left:12px" onclick="goBack()">&#8592;</button><div id="tb-brand" style="display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.2;text-align:center"><div style="display:flex;align-items:baseline;gap:5px"><span id="tbtitle" style="font-size:16px;font-weight:600">OffSong</span><span id="tbver" style="font-size:11px;color:var(--text2)">v5.6</span></div><div id="tbcopy" style="font-size:11px;color:var(--text2)">&#169; 2026 Howie Yeo</div></div><div id="tbact"></div><button class="tb" id="sp-gear" style="display:none;position:absolute;right:12px" onclick="togSidePanel()">&#9881;</button></div>
   <div id="main">
-    <div class="page vis" id="pg-lib"><div id="lib-top"><div class="sbar"><span>&#128269;</span><input type="text" id="sinp" placeholder="Search songs..." oninput="renderLib()"></div><div class="filters" id="filters"></div><div id="tag-row" style="display:none;align-items:center;margin-bottom:10px;gap:0"><button id="tag-clear" style="flex-shrink:0;padding:5px 10px;border-radius:14px;font-size:calc(var(--uisz) - 3px);background:var(--bg3);color:var(--text2);border:none;cursor:pointer;margin-right:6px;white-space:nowrap" onclick="clearTags()">&#10005; Clear</button><div class="filters" id="tag-filters" style="margin-bottom:0;flex:1"></div></div></div><div id="liblist"></div></div>
+    <div class="page vis" id="pg-lib"><div id="lib-top"><div class="sbar"><span>&#128269;</span><input type="text" id="sinp" placeholder="Search songs..." oninput="renderLib()"></div><div class="filters" id="filters"></div><div id="tag-row" style="margin-bottom:10px"><div style="display:flex;align-items:center;gap:6px"><button id="tag-info" onclick="togTagTip()" style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--bg3);color:var(--text2);border:none;font-size:11px;cursor:pointer;font-weight:700;line-height:20px;text-align:center;padding:0">i</button><button id="tag-clear" style="flex-shrink:0;padding:5px 10px;border-radius:14px;font-size:calc(var(--uisz) - 3px);background:var(--bg3);color:var(--text2);border:none;cursor:pointer;white-space:nowrap" onclick="clearTags()">&#10005; Clear</button><div class="filters" id="tag-filters" style="margin-bottom:0;flex:1"></div></div><div id="tag-tip" style="display:none;margin-top:6px;background:#333;color:#fff;font-size:calc(var(--uisz) - 3px);padding:10px 12px;border-radius:8px;line-height:1.5">If your song files have prefix tags in parentheses — e.g. (CHI), (ENG), (DUET) — they appear here as filter buttons. Tap one or more tags to filter your library. Selecting multiple tags shows only songs that have all of the selected tags.</div></div></div><div id="liblist"></div></div>
     <div class="page" id="pg-song"><div id="song-content"></div></div>
     <div class="page" id="pg-pdf" style="padding:8px 0 90px"><div id="pdff"></div></div>
     <div class="page" id="pg-img" style="padding:8px 16px 90px"><img id="imgv" style="max-width:100%;border-radius:8px"></div>
@@ -237,7 +237,7 @@ var wakeLockSentinel=null;
 var FONTS={mono:"'Courier New',Courier,'Roboto Mono','Noto Sans Mono','Consolas',monospace,sans-serif",sans:"'Segoe UI',Roboto,'Noto Sans SC','Microsoft YaHei',sans-serif",serif:"Georgia,Times,serif"};
 var KEYSIG={'C':['0',''],'G':['1','\u266F'],'D':['2','\u266F'],'A':['3','\u266F'],'E':['4','\u266F'],'B':['5','\u266F'],'F#':['6','\u266F'],'C#':['7','\u266F'],'F':['1','\u266D'],'Bb':['2','\u266D'],'Eb':['3','\u266D'],'Ab':['4','\u266D'],'Db':['5','\u266D'],'Gb':['6','\u266D'],'Cb':['7','\u266D'],'Am':['0',''],'Em':['1','\u266F'],'Bm':['2','\u266F'],'F#m':['3','\u266F'],'C#m':['4','\u266F'],'G#m':['5','\u266F'],'D#m':['6','\u266F'],'A#m':['7','\u266F'],'Dm':['1','\u266D'],'Gm':['2','\u266D'],'Cm':['3','\u266D'],'Fm':['4','\u266D'],'Bbm':['5','\u266D'],'Ebm':['6','\u266D'],'Abm':['7','\u266D']};
 var FILEEXT=/\.(txt|chopro|chordpro|cho|pdf|jpg|jpeg|png)$/i;
-var APP_VERSION='v5.5';
+var APP_VERSION='v5.6';
 var SWATCHES=[
   {name:'Amber',color:'#e8a44a'},
   {name:'Red',color:'#e85454'},
@@ -430,13 +430,14 @@ function renderFilters(){
   var h='';for(var i=0;i<types.length;i++)h+='<button class="fpill'+(curFilter===types[i][0]?' on':'')+'" onclick="setFilter(\''+types[i][0]+'\')">'+types[i][1]+'</button>';
   document.getElementById('filters').innerHTML=h;
   var tags=getFileTags(songs);
-  var tr=document.getElementById('tag-row');
-  if(!tags.length){tr.style.display='none';return}
-  tr.style.display='flex';
   var tc=document.getElementById('tag-clear');
+  var tf=document.getElementById('tag-filters');
   if(curTags.length){tc.style.background='var(--red)';tc.style.color='#fff'}
   else{tc.style.background='var(--bg3)';tc.style.color='var(--text2)'}
-  var tf=document.getElementById('tag-filters');
+  if(!tags.length){
+    tf.innerHTML='<span style="font-size:calc(var(--uisz)-3px);color:var(--text2);font-style:italic">No tags</span>';
+    return
+  }
   var th='';
   for(var j=0;j<tags.length;j++){
     var active=curTags.indexOf(tags[j])>=0;
@@ -445,6 +446,7 @@ function renderFilters(){
   }
   tf.innerHTML=th
 }
+function togTagTip(){var t=document.getElementById('tag-tip');t.style.display=t.style.display==='none'?'block':'none'}
 function togTag(t){
   var idx=curTags.indexOf(t);
   if(idx>=0)curTags.splice(idx,1);else curTags.push(t);
